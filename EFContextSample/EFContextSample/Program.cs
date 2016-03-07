@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity;
 using static System.Console;
-
+using System.Data.Entity.Infrastructure;
 
 namespace EFContextSample
 {
@@ -18,10 +18,85 @@ namespace EFContextSample
             // FindById();
             // LocalData();
             // LinqQuery();
-            UseRelation();
+            // UseRelation();
+            // LazyLoading();
+            // EagerLoading();
+            ExplicitLoading();
             WriteLine("Main end");
             ReadLine();
 
+        }
+
+        private static void ExplicitLoading()
+        {
+            using (var context = new BooksContext())
+            {
+                context.Database.Log = Console.WriteLine;
+                context.Configuration.LazyLoadingEnabled = false;
+
+                var q = from b in context.Books
+                        where b.Publisher == "Wrox Press"
+                        select b;
+
+                foreach (var b in q)
+                {
+                    Console.WriteLine($"{b.Title}");
+
+                    DbEntityEntry entry = context.Entry<Book>(b);
+                    if (!entry.Collection("Authors").IsLoaded)
+                    {
+                        entry.Collection("Authors").Load();
+                    }
+                    foreach (var author in b.Authors)
+                    {
+                        Console.WriteLine($"\t{author.FirstName} {author.LastName}");
+                    }
+                }
+            }
+        }
+
+        private static void EagerLoading()
+        {
+            using (var context = new BooksContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+                var q = from b in context.Books.Include(b => b.Authors)
+                        where b.Publisher == "Wrox Press"
+                        select b;
+
+                foreach (var b in q)
+                {
+                    Console.WriteLine($"{b.Title}");
+
+                    foreach (var author in b.Authors)
+                    {
+                        Console.WriteLine($"\t{author.FirstName} {author.LastName}");
+                    }
+                }
+            }
+        }
+
+        private static void LazyLoading()
+        {
+            using (var context = new BooksContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+                var q = from b in context.Books
+                        where b.Publisher == "Wrox Press"
+                        select b;
+
+                foreach (var b in q)
+                {
+                    Console.WriteLine($"{b.Title}");
+
+                    foreach (var author in b.Authors)
+                    {
+                        Console.WriteLine($"\t{author.FirstName} {author.LastName}");
+                    }
+                }
+            }
         }
 
         private static void UseRelation()
