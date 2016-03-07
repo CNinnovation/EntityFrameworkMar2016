@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace LINQSample
             }
         }
 
-        public static IEnumerable<T> Where<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+        public static IEnumerable<T> Where1<T>(this IEnumerable<T> source, Func<T, bool> predicate)
         {
             foreach (T item in source)
             {
@@ -44,13 +45,38 @@ namespace LINQSample
     {
         static void Main(string[] args)
         {
-            LinqQuery();
+            // LinqQuery();
             // LinqMethodSyntax();
             // GroupingSample();
             // UseMyExtensionMethod();
 
+            // ExpressionSample();
+            CompoundFrom();
+
             string s = "sample";
             s.Foo(42);
+        }
+
+        private static void CompoundFrom()
+        {
+            var q = from r in Formula1.GetChampions()
+                    from c in r.Cars
+                    where c == "Ferrari"
+                    select r;
+
+
+            foreach (var r in q)
+            {
+                Console.WriteLine($"{r.FirstName} {r.LastName}");
+            }
+        }
+
+        private static void ExpressionSample()
+        {
+            var niki = Formula1.GetChampions().Where(r => r.FirstName == "Niki").FirstOrDefault();
+
+            Expression<Func<Racer, bool>> racerFromAustria = r => r.Country == "Austria";
+            bool result = racerFromAustria.Compile()(niki);
         }
 
         private static void UseMyExtensionMethod()
