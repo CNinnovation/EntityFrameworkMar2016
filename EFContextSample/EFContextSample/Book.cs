@@ -8,8 +8,16 @@ namespace EFContextSample
 {
     public class Book
     {
+        public Book()
+        {
+            Authors = new HashSet<Author>();
+        }
+
         public int BookId { get; set; }
         public string Title { get; set; }
         public string Publisher { get; set; }
+
+        public virtual ICollection<Author> Authors { get; private set; }
+
     }
 }

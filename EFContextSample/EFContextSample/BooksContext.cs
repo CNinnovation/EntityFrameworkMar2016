@@ -9,7 +9,7 @@ namespace EFContextSample
 {
     public class BooksContext : DbContext
     {
-        private const string ConnectionString = @"server=(localdb)\mssqllocaldb;database=BooksDB;trusted_connection=true;";
+        private const string ConnectionString = @"server=(localdb)\mssqllocaldb;database=BooksDB;trusted_connection=true;MultipleActiveResultSets=true";
         public BooksContext()
             : base(ConnectionString)
         {

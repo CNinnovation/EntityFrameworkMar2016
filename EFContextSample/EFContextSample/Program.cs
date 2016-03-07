@@ -16,10 +16,44 @@ namespace EFContextSample
             // WriteToDB();
             // ReadDemo();
             // FindById();
-            LocalData();
+            // LocalData();
+            LinqQuery();
+            // UseRelation();
             WriteLine("Main end");
             ReadLine();
 
+        }
+
+        private static void UseRelation()
+        {
+            using (var context = new BooksContext())
+            {
+                var q = from b in context.Books
+                        where b.Publisher == "Wrox Press"
+                        select b;
+
+                foreach (var b in q)
+                {
+                    Console.WriteLine($"{b.Title}");
+
+                    foreach (var author in b.Authors)
+                    {
+                        Console.WriteLine($"\t{author.FirstName} {author.LastName}");
+                    }
+                }
+            }
+        }
+
+        private static void LinqQuery()
+        {
+            using (var context = new BooksContext())
+            {
+                var q = context.Books.Where(b => b.Publisher == "Wrox Press").OrderBy(b => b.Title).Skip(3).Take(3);
+                foreach (var b in q)
+                {
+                    Console.WriteLine($"{b.Title} {b.Publisher}");
+                }
+            }
         }
 
         private static void LocalData()
