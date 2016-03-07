@@ -17,8 +17,8 @@ namespace EFContextSample
             // ReadDemo();
             // FindById();
             // LocalData();
-            LinqQuery();
-            // UseRelation();
+            // LinqQuery();
+            UseRelation();
             WriteLine("Main end");
             ReadLine();
 
