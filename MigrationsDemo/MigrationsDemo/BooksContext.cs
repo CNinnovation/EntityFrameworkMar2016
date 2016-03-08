@@ -26,6 +26,7 @@ namespace MigrationsDemo
 
             modelBuilder.Entity<Book>().Property(b => b.Isbn).HasMaxLength(20).IsOptional();
 
+            // n:n relation
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.Authors)
                 .WithMany(a => a.Books)
