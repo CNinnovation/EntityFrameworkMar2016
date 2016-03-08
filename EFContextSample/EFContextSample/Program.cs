@@ -21,10 +21,105 @@ namespace EFContextSample
             // UseRelation();
             // LazyLoading();
             // EagerLoading();
-            ExplicitLoading();
+            // ExplicitLoading();
+            /// AddBooks();
+            // ModifyBook();
+            // TrackingDemo();
+            ModifyBookWithConcurrencyCheck();
             WriteLine("Main end");
             ReadLine();
 
+        }
+
+        private static void ModifyBookWithConcurrencyCheck()
+        {
+
+            using (var context = new BooksContext())
+            {
+                try {
+                    context.Database.Log = Console.WriteLine;
+
+
+                    var b1 = context.Books.Where(b => b.Title.StartsWith("Universal")).FirstOrDefault();
+                    DbEntityEntry entryB1 = context.Entry<Book>(b1);
+                    if (b1 != null)
+                    {
+                        b1.Title = "Programming Universal Apps";
+                    }
+                    int changed = context.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        private static void TrackingDemo()
+        {
+            using (var context = new BooksContext())
+            {
+                var b1 = context.Books.Where(b => b.Title.StartsWith("Universal")).AsNoTracking().FirstOrDefault();
+                var b2 = context.Books.Where(b => b.Title == "Universal Apps").AsNoTracking().FirstOrDefault();
+
+                if (object.ReferenceEquals(b1, b2))
+                {
+                    Console.WriteLine("the same object");
+                }
+                else
+                {
+                    Console.WriteLine("not the same");
+                }
+            }
+        }
+
+        private static void ModifyBook()
+        {
+            using (var context = new BooksContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+
+                var b1 = context.Books.Where(b => b.Title.StartsWith("Universal")).FirstOrDefault();
+                DbEntityEntry entryB1 = context.Entry<Book>(b1);
+                if (b1 != null)
+                {
+                    b1.Title = "Programming Universal Apps";
+                }
+                // WriteLine($"state of b1: {context.Entry<Book>(b1).State}");
+                WriteLine($"state of b1: {entryB1.State}");
+                context.ChangeTracker.DetectChanges();
+                WriteLine($"state of b1 after DetectChanges: {entryB1.State}");
+                int changed = context.SaveChanges();
+            }
+        }
+
+        private static void AddBooks()
+        {
+            using (var context = new BooksContext())
+            {
+                var b1 = new Book { Title = "Universal Apps", Publisher = "Self" };
+                var b2 = new Book { Title = "C# 6", Publisher = "Self" };
+                List<Book> books = new List<Book>()
+                {
+                   b1,
+                   b2
+                };
+                context.Books.AddRange(books);
+
+
+
+                WriteLine($"state of b1: {context.Entry<Book>(b1).State}");
+
+                WriteLine($"state of b2: {context.Entry<Book>(b2).State}");
+
+                var b3 = context.Books.Create();
+                b3.Title = "Some title";
+                b3.Publisher = "some publisher";
+
+                context.Books.Add(b3);
+                int changed = context.SaveChanges();
+            }
         }
 
         private static void ExplicitLoading()

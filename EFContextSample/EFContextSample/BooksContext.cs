@@ -21,6 +21,9 @@ namespace EFContextSample
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Book>().Property(b => b.Publisher).IsConcurrencyToken();
+
             modelBuilder.Entity<Book>()
                 .HasMany<Author>(b => b.Authors)
                 .WithMany(a => a.Books)
