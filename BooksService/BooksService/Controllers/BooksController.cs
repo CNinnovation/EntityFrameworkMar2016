@@ -29,6 +29,11 @@ namespace BooksService.Controllers
             return books[id];
         }
 
+        public string Get(int id, int x)
+        {
+            return $"id: {id}, x: {x}";
+        }
+
         // POST api/values
         public void Post([FromBody]Book value)
         {
